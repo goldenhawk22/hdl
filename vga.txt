@@ -1,0 +1,103 @@
+VGA Display
+Verilog
+module vga_display(SW,CLOCK_50,green,red,blue,hsync,vsync);
+input CLOCK_50;
+input [2:0] SW;
+output reg [2:0] green , red, blue;
+output hsync,vsync;
+VGADemo demo(CLOCK_50, pixel,hsync_out,vsync_out);
+always @ (posedge CLOCK_50) begin
+if (SW == 2'b00) begin
+red = pixel;
+end
+else if (SW == 2'b01) begin
+green = pixel;
+end
+else if (SW == 2'b10) begin
+blue = pixel;
+end
+end
+assign hsync = hsync_out;
+assign vsync = vsync_out;
+ 
+endmodule 
+module VGADemo(
+    input CLOCK_50,
+    output reg [2:0] pixel,
+    output hsync_out,
+    output vsync_out
+ 
+ 
+);
+    wire inDisplayArea;
+    wire [9:0] CounterX;
+ reg clk_25;
+ 
+ always @ (posedge CLOCK_50) begin
+ clk_25 = ~clk_25;
+ end
+ 
+    hvsync_generator hvsync(
+      .clk(clk_25),
+      .vga_h_sync(hsync_out),
+      .vga_v_sync(vsync_out),
+      .CounterX(CounterX),
+      .inDisplayArea(inDisplayArea)
+    );
+ 
+    always @(posedge clk_25)
+    begin
+      if (inDisplayArea)
+        pixel <= CounterX[9:6];
+      else // if it's not to display, go dark
+        pixel <= 3'b000;
+    end
+ 
+endmodule
+ 
+module hvsync_generator(
+    input clk,
+    output vga_h_sync,
+    output vga_v_sync,
+    output reg inDisplayArea,
+    output reg [9:0] CounterX,
+    output reg [9:0] CounterY
+  );
+    reg vga_HS, vga_VS;
+ 
+    wire CounterXmaxed = (CounterX == 800); // 16 + 48 + 96 + 640
+    wire CounterYmaxed = (CounterY == 525); // 10 + 2 + 33 + 480
+ 
+    always @(posedge clk)
+    if (CounterXmaxed)
+      CounterX <= 0;
+    else
+      CounterX <= CounterX + 1;
+ 
+    always @(posedge clk)
+    begin
+      if (CounterXmaxed)
+      begin
+        if(CounterYmaxed)
+          CounterY <= 0;
+        else
+          CounterY <= CounterY + 1;
+      end
+    end
+ 
+    always @(posedge clk)
+    begin
+      vga_HS <= (CounterX > (640 + 16) && (CounterX < (640 + 16 + 96)));   // active for 96 clocks
+      vga_VS <= (CounterY > (480 + 10) && (CounterY < (480 + 10 + 2)));   // active for 2 clocks
+    end
+ 
+    always @(posedge clk)
+    begin
+        inDisplayArea <= (CounterX < 640) && (CounterY < 480);
+    end
+ 
+    assign vga_h_sync = ~vga_HS;
+    assign vga_v_sync = ~vga_VS;
+ 
+endmodule
+

@@ -1,0 +1,52 @@
+module ripple_adder(s,carry,a,b,cin);
+output [3:0]s;
+output carry;
+input [3:0]a,b;
+input cin;
+wire c1,c2,c3;
+fulladder f1(c1,s[0],a[0],b[0],cin);
+fulladder f2(c2,s[1],a[1],b[1],c1);
+fulladder f3(c3,s[2],a[2],b[2],c2);
+fulladder f4(carry,s[3],a[3],b[3],c3);
+endmodule
+Test Bench
+module ripple_adder_tb; 
+reg [3:0]a,b; 
+reg c; 
+wire [3:0]sum; 
+wire carry; 
+ripple_adder r1(sum,carry,a,b,c); 
+initial 
+begin 
+a=0000;b=0000;c=0; 
+#100 a=0001;b=0001;c=0; 
+#100 a=0010;b=0010;c=0; 
+#100 a=0100;b=0100;c=0; 
+#100 a=0101;b=0101;c=0; 
+#100 a=0110;b=0110;c=0; 
+#100 a=0111;b=0111;c=0; 
+#100 a=1000;b=1000;c=0; 
+#100 a=1001;b=1001;c=0; 
+#100 a=1010;b=1010;c=0; 
+#100 a=1011;b=1011;c=0; 
+#100 a=1100;b=1100;c=0; 
+#100 a=1101;b=1101;c=0; 
+#100 a=1110;b=1110;c=0; 
+#100 a=1111;b=1111;c=0; 
+#100 a=0000;b=0000;c=1; 
+#100 a=0001;b=0001;c=1; 
+#100 a=0010;b=0010;c=1; 
+#100 a=0100;b=0100;c=1; 
+#100 a=0101;b=0101;c=1; 
+#100 a=0110;b=0110;c=1; 
+#100 a=0111;b=0111;c=1; 
+#100 a=1000;b=1000;c=1; 
+#100 a=1001;b=1001;c=1; 
+#100 a=1010;b=1010;c=1; 
+#100 a=1011;b=1011;c=1; 
+#100 a=1100;b=1100;c=1; 
+#100 a=1101;b=1101;c=1; 
+#100 a=1110;b=1110;c=1; 
+#100 a=1111;b=1111;c=1; 
+end 
+endmodule
