@@ -1,0 +1,44 @@
+SEVEN SEGMENT DISPLAY
+a) Aim: Write a HDL code to display the word “dsce” using Seven Segment Display.
+Verilog 
+module dsce (SW, HEX0);
+ input [1:0] SW;
+ output reg [6:0] HEX0;
+always@(SW)
+begin
+case(SW)
+ 2'b00: HEX0 = 7'b0100001;
+2'b01: HEX0 = 7'b0010010;
+2'b10: HEX0 = 7'b1000110;
+2'b11: HEX0 = 7'b0000110;
+endcase
+end
+endmodule
+b) Aim: Write a HDL code to display “Binary to decimal” using Seven Segment Display.
+Verilog 
+module b2d_ssd (SW, HEX0, HEX1);
+ input [7:0] SW;
+ output [6:0] HEX0,HEX1;
+ b2d_7seg B0 (SW[3:0], HEX0);
+ b2d_7seg B1 (SW[7:4], HEX1);
+endmodule
+module b2d_7seg (X, SSD);
+ input [3:0] X;
+ output reg [6:0] SSD;
+always@(X)
+begin
+case(X)
+4'b0000 : SSD=7'b1000000;
+4'b0001 : SSD=7'b1111001;
+4'b0010 : SSD=7'b0100100;
+4'b0011 : SSD=7'b0110000;
+4'b0100 : SSD=7'b0011001;
+4'b0101 : SSD=7'b0010010;
+4'b0110 : SSD=7'b0000010;
+4'b0111 : SSD=7'b1111000;
+4'b1000 : SSD=7'b0000000;
+4'b1001 : SSD=7'b0010000;
+endcase
+end
+endmodule
+Results
