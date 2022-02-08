@@ -1,0 +1,43 @@
+JK-FLIP FLOP
+Aim: Write a HDL code for JK-FF. 
+Verilog
+module jkff(jk, clk, q, qb); 
+input clk; 
+input [1:0]jk; 
+output q,qb; 
+reg q,qb; 
+always @(posedge clk) 
+begin 
+case(jk) 
+2'B00:q=q; 
+2'B01:q=1'B0; 
+2'B10:q=1'B1; 
+2’B11:q= ~q; 
+default:q=1'BZ; 
+endcase 
+qb=~q; 
+end 
+endmodule 
+Test Bench
+module test;
+reg clk=0;
+reg j=0;
+reg k=0;
+wire q, qb;
+ jkff dut(clk,j,k,q,qb);
+initial
+ begin
+ j=1'b1;
+ k=1'b1; #10
+ j=1'b0; 
+ k=1'b1; #10;
+ j=1'b0; 
+ k=1'b0; #10;
+ j=1'b1;
+ k=1'b0; #10;
+#100 $finish;
+ end
+initial $monitor($time, "j=%b, k=%b, q=%b, qb=%b", j, k, q, qb);
+always #5 clk=~clk;
+endmodule
+Results
