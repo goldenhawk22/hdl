@@ -1,0 +1,82 @@
+module seq_moore(input x, input clk , input rst , output reg y );
+reg [1:0]cst;
+reg [1:0]nst;
+parameter s0 = 2'b00 , s1 = 2'b01 , s2 = 2'b10 , s3 = 2'b11;
+always @(cst or x)
+begin
+case(cst)
+s0: begin
+ y=0;
+if (x)
+nst = s1;
+else
+nst = cst;
+end
+s1: begin
+ y=0;
+if (x==0)
+nst = s2;
+else
+nst = cst;
+end
+s2: begin
+ y=0;
+if (x)
+nst = s3;
+else
+nst = s0;
+end
+s3: begin
+ y=1;
+if (x)
+nst = s1;
+else
+nst = s2;
+end
+default: nst = s0 ;
+endcase
+end
+always@(posedge clk)
+begin
+if(rst)
+cst <= s0;
+else
+cst <= nst;
+end
+endmodule
+Test Bench:
+module seq_moore_tb;
+// Inputs
+reg x;
+reg clk;
+reg rst;
+// Outputs
+wire y;
+// Instantiate the Unit Under Test (UUT)
+seq_moore uut (
+.x(x), 
+.clk(clk), 
+.rst(rst), 
+.y(y)
+);
+ reg [15:0]data;
+integer k;
+initial begin
+// Initialize Inputs
+data = 16'b1010010101110101;
+clk = 0;
+k=0;
+rst = 1;
+#60 rst =0 ;
+// Wait 100 ns for global reset to finish
+#500; 
+// Add stimulus here
+$stop;
+end
+always@(posedge clk)
+begin
+x = data>>k;
+k = k+1;
+end
+always #20 clk=~clk;
+endmodule
